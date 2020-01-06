@@ -7,14 +7,14 @@ canvas = new fabric.Canvas('c', {
   selection: true,
   preserveObjectStacking: true,
   height: 700,
-  width: 800
+  width: 1000
 });
 
 let crop_rect, isDown, origX, origY, mask, target;
 let done = false;
 
-//let src = "img/graph_paper_540.png";
-let src = "img/girl1280.jpg";
+let src = "img/graph_paper_540.png";
+//let src = "img/girl1280.jpg";
 fabric.Image.fromURL(src, function(img) {
   img.selectable = true;
   img.id = 'target';
@@ -53,7 +53,7 @@ canvas.on('object:modified', function(e) {
 document.getElementById("mask").addEventListener("click", function() {
   isInsertingCropRectangle = true;
   canvas.discardActiveObject();
-  lastSelectedPicture.selectable = false;
+  //lastSelectedPicture.selectable = false;
   lastSelectedPicture.setCoords();
   lastSelectedPicture.dirty = true;
   canvas.renderAll();
@@ -274,6 +274,13 @@ canvas.on('selection:updated', function(event) {
   console.log("canvas.on('selection:updated'");
   selectionChanged(event);
 });
+canvas.on('object:moving', function(event){
+  if(done && event.target.id == "mask"){
+    console.log('is masking object');
+
+  }
+})
+
 
 function selectionChanged(event){
   console.log("selectionChanged");
