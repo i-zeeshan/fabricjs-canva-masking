@@ -7,15 +7,15 @@ let isInsertingCropRectangle = false;
 canvas = new fabric.Canvas('c', {
   selection: true,
   preserveObjectStacking: true,
-  height: 700,
-  width: 1000
+  height:1200,
+  width: 2000
 });
 //canvas.backgroundColor = 'rgba(255, 255,255,0.5)';
 let crop_rect, isDown, origX, origY, mask, target;
 let done = false;
 
-let src = "img/graph_paper_540.png";
-//let src = "img/girl1280.jpg";
+//let src = "img/graph_paper_540.png";
+let src = "img/girl1280.jpg";
 fabric.Image.fromURL(src, function(img) {
   img.selectable = true;
   img.id = 'target';
@@ -54,7 +54,7 @@ canvas.on('object:modified', function(e) {
 //////////////////////////////////////////////////////////
 document.getElementById("mask").addEventListener("click", function() {
   //isInsertingCropRectangle = true;
-  target = canvas.getActiveObject();
+  maskOriginalScaleY = canvas.getActiveObject();
   if(target.type === 'image'){
     canvas.discardActiveObject();
     // adding mask object
@@ -64,7 +64,7 @@ document.getElementById("mask").addEventListener("click", function() {
     console.log(maskHeight,maskWidth);
     maskTop = (target.top+(target.getScaledHeight()/2))-(maskHeight/2);
     maskLeft = (target.left+(target.getScaledWidth()/2))-(maskWidth/2);
-    crop_rect = new fabric.Path('M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2 c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z', {
+    crop_rect = new fabric.Path('M507.521,427.394L282.655,52.617c-12.074-20.122-41.237-20.122-53.311,0L4.479,427.394    c-12.433,20.72,2.493,47.08,26.655,47.08h449.732C505.029,474.474,519.955,448.114,507.521,427.394z', {
       left: maskLeft,
       top: maskTop,
       //width: maskWidth,
@@ -107,18 +107,21 @@ document.getElementById("crop").addEventListener("click", function() {
     let oldMaskLeft = mask.left;
     let oldMaskHeight = mask.getScaledHeight();
     let oldMaskWidth = mask.getScaledWidth();
+    let oldMaskScaleX = mask.scaleX;
+    let oldMaskScaleY = mask.scaleY;
+
     mask = rescaleMask(target, mask);
     mask.setCoords();
-
     // Do the crop
     target.clipPath = mask;
     //let ctx =
     target.dirty=true;
     canvas.setActiveObject(target);
     //canvas.bringToFront(target);
-    let clippedURL = target.toDataURL('image/png', 1.0);
-    let cropTop = oldMaskTop - target.top;
-    let cropLeft = oldMaskLeft - target.left;
+    let clippedURL = target.toDataURL({multiplier:2});
+    console.log(clippedURL);
+    let cropTop = (oldMaskTop - target.top);
+    let cropLeft = (oldMaskLeft - target.left);
     //let cropTop =(mask.top + (target.getScaledHeight()/4  ))/4 ;
     //let cropLeft = (mask.left + (target.getScaledWidth()/4  ))/4;
     //cropTop = cropTop+ (target.getScaledHeight()/2);
@@ -132,6 +135,8 @@ document.getElementById("crop").addEventListener("click", function() {
       oldMaskLeft,
       oldMaskHeight,
       oldMaskWidth,
+      oldMaskScaleX,
+      oldMaskScaleY,
     });
     //target.selectable = true;
     target.clipPath = null;
@@ -150,14 +155,16 @@ function execImage(imgData,params){
     imageCanvas.height = params.height;
     let imageContext = imageCanvas.getContext('2d');
     imageContext.drawImage(img, params.left, params.top , params.width, params.height,0,0,params.width,params.height);
+    console.log(imageCanvas.toDataURL('image/png', 1.0));
     //return imageCanvas.toDataURL();
     // add image to canvas here to keep synced;
     let fabricImage = new fabric.Image.fromURL(imageCanvas.toDataURL('image/png', 1.0),function(oImg){
       oImg.set({
         top: params.oldMaskTop,
         left: params.oldMaskLeft,
-        height: params.oldMaskHeight,
-        width: params.oldMaskWidth,
+
+        //height: params.oldMaskHeight,
+        //width: params.oldMaskWidth,
         custom: {
           obj: target,
         }
