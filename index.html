@@ -13,10 +13,43 @@
 
   </head>
   <body>
-  <canvas id="c" width="500" height="500" style="border:1px solid #ccc; float: left"></canvas>
-  <button id="mask">Mask</button>
-  <button id="crop">Crop</button>
-  <button id="uncrop">Un Crop</button>
+  <div id="bd-wrapper" ng-controller="CanvasControls">
+    <h2><span>Fabric.js demos</span> &middot; Kitchensink</h2>
+
+
+    <div style="float:left; width:40%">
+      <div style="float:left; width:40%">
+        <textarea id="json" name="json" rows="15" cols="60">{"version":"2.4.6","objects":[{"type":"image","version":"2.4.6","originX":"left","originY":"top","left":700,"top":0,"width":1410,"height":1654,"fill":"rgb(0,0,0)","stroke":null,"strokeWidth":0,"strokeDashArray":null,"strokeLineCap":"butt","strokeDashOffset":0,"strokeLineJoin":"miter","strokeMiterLimit":4,"scaleX":0.2,"scaleY":0.2,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","paintFirst":"fill","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"crossOrigin":"","cropX":0,"cropY":0,"src":"http://localhost/kitchensink/image1.jpg","filters":[]},{"type":"image","version":"2.4.6","originX":"left","originY":"top","left":127.54,"top":103.82,"width":124.3,"height":61.38,"fill":"rgb(0,0,0)","stroke":null,"strokeWidth":0,"strokeDashArray":null,"strokeLineCap":"butt","strokeDashOffset":0,"strokeLineJoin":"miter","strokeMiterLimit":4,"scaleX":1,"scaleY":1,"angle":28.73,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","paintFirst":"fill","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"clipPath":{"type":"rect","version":"2.4.6","originX":"left","originY":"top","left":-62.15,"top":-30.69,"width":565,"height":279,"fill":"rgba(0,0,0,1)","stroke":"rgba(0,0,0,1)","strokeWidth":1,"strokeDashArray":null,"strokeLineCap":"butt","strokeDashOffset":0,"strokeLineJoin":"miter","strokeMiterLimit":4,"scaleX":0.22,"scaleY":0.22,"angle":28.73,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","paintFirst":"fill","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"rx":0,"ry":0,"inverted":false,"absolutePositioned":false},"crossOrigin":"","cropX":0,"cropY":0,"clipped_to":{"type":"rect","version":"2.4.6","originX":"left","originY":"top","left":-62.15,"top":-30.69,"width":565,"height":279,"fill":"rgba(0,0,0,1)","stroke":"rgba(0,0,0,1)","strokeWidth":1,"strokeDashArray":null,"strokeLineCap":"butt","strokeDashOffset":0,"strokeLineJoin":"miter","strokeMiterLimit":4,"scaleX":0.22,"scaleY":0.22,"angle":28.73,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","paintFirst":"fill","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"rx":0,"ry":0},"oldLeft":50,"oldTop":100,"oldHeight":144,"oldWidth":250,"cropParams":{"x":77.540235242971,"y":3.8220429565067775,"w":"124.30","h":"61.38","scale":1,"scaleCrop":1},"src":"http://localhost/kitchensink/11.jpg","filters":[]}],"background":"rgba(255,255,255,1)"}</textarea>
+        <BR>
+      </div>
+      <BR>
+    </div>
+
+
+
+    <BR>
+    <button id="mask">Mask</button>
+    <button id="crop">Crop</button>
+    <button id="uncrop">Un Crop</button>
+    <BR><BR>
+    <input type="button" id="toJSON" name="toJSON" value="toJSON">
+    <input type="button" id="fromJSON" name="fromJSON" value="fromJSON">
+    <BR><BR><BR><BR>
+    <div style="width: 100%;display: inline-block;" id="left-panel">
+      <div style="position:relative;width:300px;float:left;" id="left-panel">
+        <img class="crop-image" src="wifi-signal-icon2.svg" width="100px" height="auto"/><BR>
+        <img class="crop-image" src="circle small_65.svg" width="100px" height="auto"/><BR>
+        <img class="crop-image" src="COLORFUL_T_SHIRTS.svg" width="100px" height="auto"/><BR>
+        <img class="crop-image" src="octagon.svg" width="100px" height="auto"/><BR>
+      </div>
+      <div style="position:relative;width:704px;float:left;" id="canvas-wrapper">
+
+
+
+        <canvas id="c" width="1410" height="2250"></canvas>
+      </div>
+    </div>
+  </div>
   <script src="script.js"></script>
   </body>
 </html>

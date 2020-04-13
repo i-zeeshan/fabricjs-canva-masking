@@ -7,15 +7,16 @@ let isInsertingCropRectangle = false;
 canvas = new fabric.Canvas('c', {
   selection: true,
   preserveObjectStacking: true,
-  height:1200,
-  width: 2000
+  height:700,
+  width: 1000
 });
 //canvas.backgroundColor = 'rgba(255, 255,255,0.5)';
 let crop_rect, isDown, origX, origY, mask, target;
 let done = false;
 
 //let src = "img/graph_paper_540.png";
-let src = "img/girl1280.jpg";
+//let src = "img/graph_paper_540.png";
+let src = 'img/11.jpg';
 fabric.Image.fromURL(src, function(img) {
   img.selectable = true;
   img.id = 'target';
@@ -124,8 +125,8 @@ document.getElementById("crop").addEventListener("click", function() {
     let cropLeft = (oldMaskLeft - target.left);
     //let cropTop =(mask.top + (target.getScaledHeight()/4  ))/4 ;
     //let cropLeft = (mask.left + (target.getScaledWidth()/4  ))/4;
-    //cropTop = cropTop+ (target.getScaledHeight()/2);
-    //cropLeft = cropLeft+ (target.getScaledWidth()/2);
+    cropTop = cropTop+ (target.getScaledHeight()/2);
+    cropLeft = cropLeft+ (target.getScaledWidth()/2);
     execImage(clippedURL, {
       width:mask.getScaledWidth(),
       height:mask.getScaledHeight(),
@@ -151,20 +152,22 @@ function execImage(imgData,params){
   let img =  new Image();
   img.onload = function(){
     let imageCanvas = document.createElement('canvas');
-    imageCanvas.width = params.width;
-    imageCanvas.height = params.height;
+    imageCanvas.width = img.width;
+    imageCanvas.height = img.height;
     let imageContext = imageCanvas.getContext('2d');
-    imageContext.drawImage(img, params.left, params.top , params.width, params.height,0,0,params.width,params.height);
-    console.log(imageCanvas.toDataURL('image/png', 1.0));
+    imageContext.drawImage(img , 0 ,0 , img.width , img.height);
+    let finalImageCanvas = trimCanvas(imageCanvas);
+    console.log(finalImageCanvas.toDataURL('image/png', 1.0));
     //return imageCanvas.toDataURL();
     // add image to canvas here to keep synced;
-    let fabricImage = new fabric.Image.fromURL(imageCanvas.toDataURL('image/png', 1.0),function(oImg){
+    let fabricImage = new fabric.Image.fromURL(finalImageCanvas.toDataURL('image/png', 1.0),function(oImg){
       oImg.set({
         top: params.oldMaskTop,
         left: params.oldMaskLeft,
-
-        //height: params.oldMaskHeight,
-        //width: params.oldMaskWidth,
+        height: finalImageCanvas.height,
+        width: finalImageCanvas.width,
+        scaleX:params.oldMaskScaleX,
+        scaleY:params.oldMaskScaleY,
         custom: {
           obj: target,
         }
@@ -176,6 +179,63 @@ function execImage(imgData,params){
     });
   };
   img.src = imgData;
+}
+function trimCanvas(c) {
+  let ctx = c.getContext('2d'),
+      copy = document.createElement('canvas').getContext('2d'),
+      pixels = ctx.getImageData(0, 0, c.width, c.height),
+      l = pixels.data.length,
+      i,
+      bound = {
+        top: null,
+        left: null,
+        right: null,
+        bottom: null
+      },
+      x, y;
+
+  // Iterate over every pixel to find the highest
+  // and where it ends on every axis ()
+  for (i = 0; i < l; i += 4) {
+    if (pixels.data[i + 3] !== 0) {
+      x = (i / 4) % c.width;
+      y = ~~((i / 4) / c.width);
+
+      if (bound.top === null) {
+        bound.top = y;
+      }
+
+      if (bound.left === null) {
+        bound.left = x;
+      } else if (x < bound.left) {
+        bound.left = x;
+      }
+
+      if (bound.right === null) {
+        bound.right = x;
+      } else if (bound.right < x) {
+        bound.right = x;
+      }
+
+      if (bound.bottom === null) {
+        bound.bottom = y;
+      } else if (bound.bottom < y) {
+        bound.bottom = y;
+      }
+    }
+  }
+
+  // Calculate the height and width of the content
+  var trimHeight = bound.bottom - bound.top,
+      trimWidth = bound.right - bound.left,
+      trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight);
+
+  copy.canvas.width = trimWidth;
+  copy.canvas.height = trimHeight;
+  copy.putImageData(trimmed, 0, 0);
+
+  // Return trimmed canvas
+  return copy.canvas;
 }
 
 // un crop
