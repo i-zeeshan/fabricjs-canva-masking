@@ -45,12 +45,23 @@ canvas.on('object:modified', function(e) {
   canvas.renderAll();
 });
 
+
+document.getElementById('toJSON').addEventListener('click',function ()
+{
+    let json = canvas.toJSON(['custom']);
+    document.getElementById('json').value = JSON.stringify(json);
+});
+
+document.getElementById('fromJSON').addEventListener('click',function ()
+{
+    let string =  JSON.parse(document.getElementById('json').value);
+    canvas.loadFromJSON(string);
+});
 //////////////////////////////////////////////////////////
 // MASK
 //////////////////////////////////////////////////////////
 document.getElementById("mask").addEventListener("click", function() {
   //isInsertingCropRectangle = true;
-  maskOriginalScaleY = canvas.getActiveObject();
   if(target.type === 'image'){
     canvas.discardActiveObject();
     // adding mask object
@@ -159,7 +170,7 @@ function execImage(imgData,params){
         scaleX:newScaleX,
         scaleY:newScaleY,
         custom: {
-          obj: target,
+          obj: JSON.stringify(target.toJSON(['id','custom'])),
         }
       });
       canvas.remove(target);
@@ -233,10 +244,9 @@ document.getElementById("uncrop").addEventListener("click", function(){
   let activeObject  = canvas.getActiveObject();
   if(activeObject.custom && activeObject.custom.obj){
     canvas.remove(activeObject);
-    canvas.add(activeObject.custom.obj);
+    canvas.add(JSON.parse(activeObject.custom.obj));
     canvas.requestRenderAll();
   }
-
 });
 
 //////////////////////////////////////////////////////////
@@ -298,36 +308,16 @@ function rescaleMask(target, mask){
 }
 
 canvas.on('selection:created', function(event) {
-  console.log("canvas.on('selection:created'");
   selectionChanged(event);
 });
 
 canvas.on('selection:updated', function(event) {
-  console.log("canvas.on('selection:updated'");
   selectionChanged(event);
 });
-canvas.on('object:moving', function(event){
-  if(done && event.target.id == "mask"){
-    console.log('is masking object');
 
-  }
-})
 
 function selectionChanged(event){
-  //console.log("selectionChanged");
-  //console.log("selectionChanged type = "+event.target.type);
-  switch(event.target.type) {
-    case 'textbox':
-      break;
-    case 'image':
-      lastSelectedPicture = event.target;
-      break;
-    case 'rect':
-      break;
-    case 'group':
-      break;
-    default:
-      break;
+  if(event.target.type === 'image'){
+    lastSelectedPicture = event.target;
   }
-
 }
