@@ -216,7 +216,7 @@ function trimCanvas(c) {
   }
 
   // Calculate the height and width of the content
-  var trimHeight = bound.bottom - bound.top,
+  let trimHeight = bound.bottom - bound.top,
       trimWidth = bound.right - bound.left,
       trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight);
 
