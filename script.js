@@ -10,7 +10,6 @@ canvas = new fabric.Canvas('c', {
   height:700,
   width: 1000
 });
-//canvas.backgroundColor = 'rgba(255, 255,255,0.5)';
 let crop_rect, isDown, origX, origY, mask, target;
 let done = false;
 
@@ -25,7 +24,6 @@ fabric.Image.fromURL(src, function(img) {
   canvas.add(img);
 });
 
-
 canvas.on('object:added', function(e) {
   target = null;
   mask = null;
@@ -37,9 +35,6 @@ canvas.on('object:added', function(e) {
       canvas.setActiveObject(obj);
     }
     if (id === 'mask') {
-      //alert(done);
-      //alert('mask');
-
       mask = obj;
     }
   });
@@ -86,14 +81,6 @@ document.getElementById("mask").addEventListener("click", function() {
     canvas.renderAll();
 
   }
-
-
-  //lastSelectedPicture.selectable = false;
-  /*lastSelectedPicture.setCoords();
-  lastSelectedPicture.dirty = true;
-  canvas.renderAll();
-  canvas.discardActiveObject();
-  isInsertingCropRectangle = true;*/
 });
 
 //////////////////////////////////////////////////////////
@@ -158,7 +145,10 @@ function execImage(imgData,params){
     imageContext.drawImage(img , 0 ,0 , img.width , img.height);
     let finalImageCanvas = trimCanvas(imageCanvas);
     console.log(finalImageCanvas.toDataURL('image/png', 1.0));
-    //return imageCanvas.toDataURL();
+    // calculate new scale
+    let newScaleX = params.oldMaskHeight / finalImageCanvas.height;
+    let newScaleY = params.oldMaskWidth / finalImageCanvas.width;
+
     // add image to canvas here to keep synced;
     let fabricImage = new fabric.Image.fromURL(finalImageCanvas.toDataURL('image/png', 1.0),function(oImg){
       oImg.set({
@@ -166,8 +156,8 @@ function execImage(imgData,params){
         left: params.oldMaskLeft,
         height: finalImageCanvas.height,
         width: finalImageCanvas.width,
-        scaleX:params.oldMaskScaleX,
-        scaleY:params.oldMaskScaleY,
+        scaleX:newScaleX,
+        scaleY:newScaleY,
         custom: {
           obj: target,
         }
@@ -283,9 +273,6 @@ function rescaleMask(target, mask){
     centerBasedY = (-(targetCenterY) + maskOverlapY)/target.scaleY;
   }
 
-
-
-
   console.log('targetleft = '+target.left);
   console.log('targettop = '+target.top);
   console.log('targetCenterX = '+targetCenterX);
@@ -303,123 +290,12 @@ function rescaleMask(target, mask){
   mask.top = centerBasedY;
   mask.originX = 'left';
   mask.originY = 'top';
-
   mask.setCoords();
   mask.dirty=true;
   canvas.renderAll();
-
-
-
   //let newMask = mask;
   return(mask);
 }
-
-canvas.on('mouse:down', function(o) {
-  /*if( isInsertingCropRectangle == true ){
-    console.log('mouse down done = '+done);
-    if (done) {
-      canvas.renderAll();
-      return;
-    }
-    isDown = true;
-    let pointer = canvas.getPointer(o.e);
-    origX = pointer.x;
-    origY = pointer.y;
-    crop_rect = new fabric.Path('M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2 c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z', {
-      left: origX,
-      top: origY,
-      width: pointer.x - origX,
-      height: pointer.y - origY,
-      opacity: .3,
-      transparentCorners: false,
-      selectable: true,
-      id: 'mask'
-    });
-    /!*crop_rect = new fabric.Rect({
-      left: origX,
-      top: origY,
-      width: pointer.x - origX,
-      height: pointer.y - origY,
-      opacity: .3,
-      transparentCorners: false,
-      selectable: true,
-      id: 'mask'
-    });*!/
-    canvas.setActiveObject(crop_rect);
-    canvas.add(crop_rect);
-    canvas.renderAll();
-  }
-  else{
-
-  }*/
-});
-
-canvas.on('mouse:move', function(o) {
-  /*if( isInsertingCropRectangle == true ){
-    console.log('mouse move done = '+done);
-    if (done) {
-      canvas.renderAll();
-      return;
-    }
-    if (!isDown) return;
-    let pointer = canvas.getPointer(o.e);
-
-    if (origX > pointer.x) {
-      crop_rect.set({
-        left: Math.abs(pointer.x)
-      });
-    }
-    if (origY > pointer.y) {
-      crop_rect.set({
-        top: Math.abs(pointer.y)
-      });
-    }
-    console.log(origX , origY , pointer.x , pointer.y);
-    let oldWidth = crop_rect.width;
-    let calcWidth = Math.abs(origX - pointer.x)
-    let oldHeight = crop_rect.height;
-    let calcHeight = Math.abs(origY - pointer.y)
-    crop_rect.set({
-      scaleX: (calcWidth-oldWidth)/oldWidth,
-    });
-    crop_rect.set({
-      scaleY: (calcHeight-oldHeight)/oldHeight,
-    });
-
-    /!*crop_rect.set({
-      width: Math.abs(origX - pointer.x)
-    });
-    crop_rect.set({
-      height: Math.abs(origY - pointer.y)
-    });*!/
-
-
-    crop_rect.setCoords();
-    canvas.renderAll();
-  }
-  else{
-
-  }*/
-});
-
-canvas.on('mouse:up', function(o) {
-  /*if( isInsertingCropRectangle == true ){
-    console.log('mouse up done = '+done);
-    if (done) {
-      canvas.renderAll();
-      return;
-    }
-    isDown = false;
-
-    crop_rect.set({
-      selectable: true
-    });
-    done = true;
-  }
-  else{
-
-  }*/
-});
 
 canvas.on('selection:created', function(event) {
   console.log("canvas.on('selection:created'");
@@ -436,7 +312,6 @@ canvas.on('object:moving', function(event){
 
   }
 })
-
 
 function selectionChanged(event){
   //console.log("selectionChanged");
